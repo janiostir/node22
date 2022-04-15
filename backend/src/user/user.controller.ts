@@ -1,11 +1,15 @@
-import {Body, Controller, Delete, Get, Param, Post, Put} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, Put, Req} from '@nestjs/common';
 import {get} from "http";
 import {UserService} from "./user.service";
 import {User} from "./user.entity";
+import {Request} from "express";
+import {JwtService} from "@nestjs/jwt";
 
 @Controller('users')
 export class UserController {
-    constructor(private userService: UserService) {
+    constructor(
+        private userService: UserService,
+        private jwtService: JwtService) {
     }
 
     @Get()
@@ -13,6 +17,14 @@ export class UserController {
         return this.userService.all();
     }
 
+    @Get('profile')
+    async profile(@Req() request: Request) {
+        const token = request.cookies['jwt'];
+
+        const data = await this.jwtService.verifyAsync(token);
+
+        return this.userService.findOne({id: data.id})
+    }
     @Post('user')
     create(@Body() data): Promise<User>{
         return this.userService.create(data);
@@ -35,5 +47,6 @@ export class UserController {
     delete(@Param('id') id:number) : Promise<any> {
         return this.userService.delete(id);
     }
+
 
 }
