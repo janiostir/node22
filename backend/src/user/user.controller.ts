@@ -1,10 +1,12 @@
-import {Body, Controller, Delete, Get, Param, Post, Put, Req} from '@nestjs/common';
+import {Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards} from '@nestjs/common';
 import {get} from "http";
 import {UserService} from "./user.service";
 import {User} from "./user.entity";
 import {Request} from "express";
 import {JwtService} from "@nestjs/jwt";
+import {AuthGuard} from "../auth/auth.guard";
 
+@UseGuards(AuthGuard)
 @Controller('users')
 export class UserController {
     constructor(
@@ -16,6 +18,7 @@ export class UserController {
     all(){
         return this.userService.all();
     }
+
 
     @Get('profile')
     async profile(@Req() request: Request) {

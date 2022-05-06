@@ -1,4 +1,4 @@
-import {BadRequestException, Body, Controller, NotFoundException, Post, Res} from '@nestjs/common';
+import {BadRequestException, Body, Controller, NotFoundException, Post, Res, UseGuards} from '@nestjs/common';
 import {register} from "tsconfig-paths";
 import {UserService} from "../user/user.service";
 import {RegisterDto} from "./register.dto";
@@ -7,6 +7,7 @@ import {LoginDto} from "./login.dto";
 import {NotFoundError} from "rxjs";
 import {JwtService} from "@nestjs/jwt";
 import {Response} from "express";
+import {AuthGuard} from "./auth.guard";
 
 
 @Controller('auth')
@@ -48,6 +49,7 @@ export class AuthController {
         return user;
     }
 
+    @UseGuards(AuthGuard)
     @Post('Logout')
     logout(@Res({passthrough:true}) response: Response) {
         response.clearCookie('jwt');
